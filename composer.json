@@ -31,7 +31,7 @@
   },
   "autoload": {
     "psr-4": {
-      "APIAPI\\Authenticator_Basic \\": "src/Authenticator_Basic /"
+      "APIAPI\\Authenticator_Basic\\": "src/Authenticator_Basic/"
     },
     "files": [
       "src/authenticator-basic.php"
