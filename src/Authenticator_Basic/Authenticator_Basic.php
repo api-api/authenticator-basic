@@ -2,14 +2,15 @@
 /**
  * Authenticator_Basic class
  *
- * @package APIAPIAuthenticatorBasic
+ * @package APIAPI\Authenticator_Basic
  * @since 1.0.0
  */
 
 namespace APIAPI\Authenticator_Basic;
 
 use APIAPI\Core\Authenticators\Authenticator;
-use APIAPI\Core\Exception;
+use APIAPI\Core\Request\Route_Request;
+use APIAPI\Core\Exception\Request_Authentication_Exception;
 
 if ( ! class_exists( 'APIAPI\Authenticator_Basic\Authenticator_Basic' ) ) {
 
@@ -26,15 +27,16 @@ if ( ! class_exists( 'APIAPI\Authenticator_Basic\Authenticator_Basic' ) ) {
 		 * the required values on the request object.
 		 *
 		 * @since 1.0.0
-		 * @access public
 		 *
-		 * @param APIAPI\Core\Request\Route_Request $request The request to send.
+		 * @param Route_Request $request The request to send.
+		 *
+		 * @throws Request_Authentication_Exception Thrown when the request cannot be authenticated.
 		 */
-		public function authenticate_request( $request ) {
+		public function authenticate_request( Route_Request $request ) {
 			$data = $this->parse_authentication_data( $request );
 
 			if ( empty( $data['username'] ) || empty( $data['password'] ) ) {
-				throw new Exception( sprintf( 'The request to %s could not be authenticated as username and password have not been passed.', $request->get_uri() ) );
+				throw new Request_Authentication_Exception( sprintf( 'The request to %s could not be authenticated as username and password have not been passed.', $request->get_uri() ) );
 			}
 
 			$request->set_header( 'Authorization', 'Basic ' . base64_encode( $data['username'] . ':' . $data['password'] ) );
@@ -47,12 +49,11 @@ if ( ! class_exists( 'APIAPI\Authenticator_Basic\Authenticator_Basic' ) ) {
 		 * It only checks whether authentication data has been properly set on it.
 		 *
 		 * @since 1.0.0
-		 * @access public
 		 *
-		 * @param APIAPI\Core\Request\Route_Request $request The request to check.
+		 * @param Route_Request $request The request to check.
 		 * @return bool True if the request is authenticated, otherwise false.
 		 */
-		public function is_authenticated( $request ) {
+		public function is_authenticated( Route_Request $request ) {
 			$data = $this->parse_authentication_data( $request );
 
 			$header_value = $request->get_header( 'Authorization' );
@@ -67,7 +68,6 @@ if ( ! class_exists( 'APIAPI\Authenticator_Basic\Authenticator_Basic' ) ) {
 		 * Sets the default authentication arguments.
 		 *
 		 * @since 1.0.0
-		 * @access protected
 		 */
 		protected function set_default_args() {
 			$this->default_args = array(
